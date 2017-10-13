@@ -1,21 +1,6 @@
-package xyz.xwms.bas.entity;
-
-import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
-import xyz.elidom.dbist.annotation.GenerationRule;
-import xyz.elidom.dbist.annotation.Table;
-import xyz.elidom.dbist.annotation.Relation;
-import xyz.xwms.bas.entity.relation.InvInventoryRef;
-import xyz.xwms.bas.entity.relation.InvMatBillHeadRef;
-import xyz.xwms.bas.entity.relation.InvAccountRef;
-import xyz.xwms.bas.entity.relation.InvMaterialRef;
-import xyz.xwms.bas.entity.relation.InvLocationRef;
-import xyz.xwms.bas.entity.relation.InvCostCenterRef;
-import xyz.xwms.bas.entity.relation.InvOrganizationRef;
-import xyz.xwms.bas.entity.relation.InvAddressRef;
 
 @Table(name = "inv_mat_bill_details", idStrategy = GenerationRule.UUID)
-public class InvMatBillDetail extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+public class InvMatBillDetail {
 	/**
 	 * SerialVersion UID
 	 */
