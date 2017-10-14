@@ -10,11 +10,11 @@ __author__ = 'liqiang'
 import os,sys,re
 
 # 处理java文件
-def eachFile():
-    javaFilePath = ''
-    fieldList = []
-    generalFieldList = []
-    entityFieldDict = {}
+def javaFileParseSql():
+    javaFilePath = '' # java文件路径
+    fieldList = [] # 总字段LIST
+    generalFieldList = [] # 普通字段LIST
+    entityFieldDict = {} #实体字段DICT
 
     pwd = os.getcwd()# 获取当前文件路径
     pathDir = os.listdir(pwd) # 获取文件夹
@@ -30,7 +30,7 @@ def eachFile():
         for eachLine in fopen:# 根据注解获取文件内容并加入fieldList中
             if eachLine.find('@Table') >= 0 or eachLine.find('@Column')>= 0 or eachLine.find('@Relation')>= 0 or eachLine.find('private')>= 0:
                 fieldList.append(eachLine)
-
+    # 遍历fieldList
     for field in fieldList:
         if field.find('@Table') >= 0:
             masterTableName = getFieldIdByRegx(field)# 获取主表name
@@ -46,7 +46,7 @@ def eachFile():
                 aliasSubDict = {}
                 entityFieldDict[entityName] = entitySubDict
                 entitySubDict['alias'] = aliasSubDict
-                aliasSubDict['aliasValue'] = entityAlias
+                aliasSubDict['alias_value'] = entityAlias
                 aliasSubDict['field_name'] = getfieldNameAlias(getFieldIdByRegx(field))
                 entitySubDict['field_id_temp'] = getFieldIdByRegx(field)
                 entitySubDict['field_id'] = getfieldIdAlias(getFieldIdByRegx(field))
@@ -57,7 +57,7 @@ def eachFile():
     for generalField in generalFieldList:
         sql = sql + masterTableAlias + '.' + generalField + ',\n\t\t'
 
-
+    # 遍历entityFieldDict
     if entityFieldDict:
         print(entityFieldDict)
         for (subDictKey,subDictValue) in entityFieldDict.items():
@@ -68,11 +68,11 @@ def eachFile():
                     sql = sql + masterTableAlias + '.' + v + ' AS '
                 if k == 'alias':
                     for (key, value) in v.items():
-                        if key == 'aliasValue':
-                            aliasValue = v[key]
+                        if key == 'alias_value':
+                            alias_value = v[key]
                         elif key == 'field_name':
                             fieldName = v[key]
-                    sql = sql + aliasValue + '.name'  +' AS ' + fieldName + ',\n\t\t'
+                    sql = sql + alias_value + '.name'  +' AS ' + fieldName + ',\n\t\t'
                 if k == 'field_id':
                     sql = sql + v + ',' + '\n\t\t'
         print(sql)
@@ -81,8 +81,8 @@ def eachFile():
         # 拼接实体表名
         for (subDictKey, subDictValue) in entityFieldDict.items():
             sql = sql + ' LEFT JOIN '+ subDictKey + ' AS ' \
-                            + entityFieldDict[subDictKey]['alias']['aliasValue'] + ' ON ' \
-                            + entityFieldDict[subDictKey]['alias']['aliasValue'] + '.id = '\
+                            + entityFieldDict[subDictKey]['alias']['alias_value'] + ' ON ' \
+                            + entityFieldDict[subDictKey]['alias']['alias_value'] + '.id = '\
                             + masterTableAlias + '.' +  entityFieldDict[subDictKey]['field_id_temp'] + '\n\t\t'
         sql = sql[0:len(sql) - 3]  # 去掉\n\t
         sql = sql +'\n'+ ' WHERE ' + masterTableAlias + '.domain_id = :domainId '
@@ -94,7 +94,8 @@ def eachFile():
         sql = sql + 'WHERE ' + masterTableAlias + '.domain_id = :domainId '
         print('不带引用实体的sql')
         print(sql)
-    saveSqlFile('demoSql.sql',sql) # 将处理得到的sql输出
+        
+    saveSqlFile('demoSql.sql',sql) # 将处理得到的sql输出当前文件目录下demoSql.sql文件中
 
 
 # 获取field的id
@@ -156,7 +157,7 @@ def saveSqlFile(fileName,contents):
 
 
 
-eachFile()
+javaFileParseSql()
 
 
 
